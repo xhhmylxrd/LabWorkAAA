@@ -1,5 +1,14 @@
-public class Shorty extends Creature {
-    public Car isInTheCar;
+package LivingBeing;
+
+import Utility.*;
+import Things.*;
+
+public class Shorty extends Creature implements AbleToJoinStory {
+
+
+    private Car isInTheCar;
+    private boolean isAbleToDrinkAllLemonade;
+    private boolean loveToRideCar;
 
     public Shorty() {
         super();
@@ -12,12 +21,11 @@ public class Shorty extends Creature {
 
     @Override
     public void joinStory() {
-        System.out.println(joinMassage()+"\n");
+        System.out.println(joinMassage() + "\n");
     }
 
 
-    @Override
-    protected String joinMassage() {
+    private String joinMassage() {
         return "Коротышка " + name + " присоединился к истории";
     }
 
@@ -33,8 +41,7 @@ public class Shorty extends Creature {
                 changingLocationMassage(speed);
                 System.out.println("Коротышка " + name + " переместился в " + location + "\n");
             }
-        }
-        else{
+        } else {
             isInTheCar.moveTo(location);
         }
     }
@@ -43,7 +50,11 @@ public class Shorty extends Creature {
     @Override
     protected void changingLocationMassage(Double speed) {
         Double distance = 200d;
-        System.out.println("Коротышка " + name + " перемещается...");
+        if (speed < 30) {
+            System.out.println("Коротышка " + name + " идет...");
+        } else {
+            System.out.println("Коротышка " + name + " бежит...");
+        }
         Time.pause(distance / speed);
     }
 
@@ -59,21 +70,22 @@ public class Shorty extends Creature {
 
     @Override
     public void driveCar(Car car) {
-        if (car.isDriven) {
+        if (car.getIsDriven()) {
             System.out.println("За рулем уже кто-то есть!");
         } else {
             isInTheCar = car;
-            car.isDriven = true;
-            car.freeSeats += 1;
-            car.driversName = name;
+            car.setIsDriven(true);
+            car.setFreeSeats(car.getFreeSeats() + 1);
+            car.setDriversName(name);
             System.out.println(name + " теперь находится за рулем машины.");
         }
     }
 
     @Override
     public void rideCar(Car car) {
-        if (car.freeSeats > 0) {
-            car.freeSeats -= 1;
+        if (car.getFreeSeats() > 0) {
+            isAbleToDrinkAllLemonade = true;
+            car.setFreeSeats(car.getFreeSeats() - 1);
             isInTheCar = car;
             System.out.println(name + " теперь находится на пассажирском сидении");
         } else {
@@ -84,31 +96,66 @@ public class Shorty extends Creature {
 
     @Override
     public void leaveCar(Car car) {
-        if (car.driversName.equals(name)) {
-            car.driversName = "";
-            car.freeSeats += 1;
+        if (car.getDriversName().equals(name)) {
+            car.setDriversName(null);
+            car.setFreeSeats(car.getFreeSeats() + 1);
             System.out.println(name + " вышел с водительского места");
             isInTheCar = null;
-        } else if (isInTheCar.equals(car)){
-            car.freeSeats += 1;
+
+        } else if (isInTheCar.equals(car)) {
+            car.setFreeSeats(car.getFreeSeats() + 1);
             isInTheCar = null;
             System.out.println(name + " вышел с пассажирского места");
-        }
-        else{
+        } else {
             System.out.println(name + " и так не в машине.");
         }
         System.out.println();
     }
 
-    public void communicateWith(Shorty shorty, String massage){
-        if (this.location == shorty.location){
-            System.out.println(this.name + " обращается к " + shorty.name+":");
-            System.out.println(massage+"\n");
+    public void communicateWith(Shorty shorty, String massage) {
+        if (this.location == shorty.location) {
+            System.out.println(this.name + " обращается к " + shorty.name + ":");
+            System.out.println(massage + "\n");
 
-        }
-        else{
+        } else {
             System.out.println(name + " не может обратиться к " + shorty.name + ". Персонажи не рядом");
         }
     }
 
+    public boolean getIsAbleToDrinkAllLemonade() {
+        return isAbleToDrinkAllLemonade;
+    }
+
+    public boolean getLoveToRideCar() {
+        return loveToRideCar;
+
+    }
+
+    public void loveToRideCarMassage() {
+        if (loveToRideCar) {
+            System.out.println(name + " Любит ездить на машине" + '\n');
+        } else {
+            System.out.println(name + " не любит ездить на машине\n");
+        }
+
+    }
+
+    public void setLoveToRideCar(boolean value) {
+        loveToRideCar = value;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj.hashCode() == this.hashCode() && this.getClass() == obj.getClass();
+    }
+
+    @Override
+    public String toString() {
+        return "Коротышка " + name + ", находящийся в " + location + ", " + age + " лет от роду, со скоростью = " + speed;
+    }
 }
